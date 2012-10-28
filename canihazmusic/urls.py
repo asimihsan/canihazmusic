@@ -7,6 +7,8 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     # Examples:
+    url(r'^$|^index.htm$|^index.html$', 'apps.landing.views.index', name='index'),
+
     # url(r'^$', 'canihazmusic.views.home', name='home'),
     # url(r'^canihazmusic/', include('canihazmusic.foo.urls')),
 
