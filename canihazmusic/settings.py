@@ -131,6 +131,9 @@ INSTALLED_APPS = (
 
     # My apps.
     'apps.landing',
+    'apps.updates',
+    'apps.search',
+    'apps.settings',
 
     'gunicorn',
 )

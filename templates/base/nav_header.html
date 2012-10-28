@@ -1,0 +1,21 @@
+{# nav_header.html #}
+{% load url from future %}
+
+{% url read_updates as updates %}
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="brand" href="/">icanhazmusic</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li><a class="{% active request updates %}" href="{% url 'apps.updates.views.read_updates' %}">About</a></li>
+                            <li><a href="#">Search</a></li>
+                            <li><a href="#">Settings</a></li>
+                        </ul>
+                            <li><a href="/">Logout</a></li>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+

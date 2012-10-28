@@ -1,0 +1,46 @@
+{# updates/read_updates.html #}
+{% extends "updates/base.html" %}
+{% load url from future %}
+
+{% block title %}{% endblock %}  
+
+{% block content %}
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/">icanhazmusic</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li><a href="{% url 'apps.updates.views.read_updates' %}">Updates</a></li>
+                            <li class="active"><a href="{% url 'apps.search.views.search' %}">Search</a></li>
+                            <li><a href="{% url 'apps.settings.views.settings' %}">Settings</a></li>
+                        </ul>
+                        <ul class="nav pull-right">
+                            <li><a href="/">Logout</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <div class="alert alert-info"><button class="close" data-dismiss="alert" type="button">×</button><strong>You're new here!</strong> This is the search page. Here you can not only search for new release but then tell us that you want to get emails about future updates to each search. Close this box to make it go away!</div>
+
+                    <form class="form-search">
+                        <div class="input-append">
+                            <input type="text" class="span4 search-query">
+                            <button type="submit" class="btn">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> <!-- /container -->
+
+{% endblock %}

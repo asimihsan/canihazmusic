@@ -6,11 +6,10 @@ from django.conf import settings
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
+    url(r'^updates/', include('apps.updates.urls')),
+    url(r'^search', include('apps.search.urls')),
+    url(r'^settings/', include('apps.settings.urls')),
     url(r'^$|^index.htm$|^index.html$', 'apps.landing.views.index', name='index'),
-
-    # url(r'^$', 'canihazmusic.views.home', name='home'),
-    # url(r'^canihazmusic/', include('canihazmusic.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

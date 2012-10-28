@@ -1,0 +1,56 @@
+{# updates/read_updates.html #}
+{% extends "updates/base.html" %}
+{% load url from future %}
+
+{% block title %}{% endblock %}  
+
+{% block content %}
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/">icanhazmusic</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li class="active"><a href="{% url 'apps.updates.views.read_updates' %}">Updates</a></li>
+                            <li><a href="{% url 'apps.search.views.search' %}">Search</a></li>
+                            <li><a href="{% url 'apps.settings.views.settings' %}">Settings</a></li>
+                        </ul>
+                        <ul class="nav pull-right">
+                            <li><a href="/">Logout</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="span12">
+                    <div class="alert alert-info"><button class="close" data-dismiss="alert" type="button">×</button><strong>You're new here!</strong> This is your updates page. Once you save some searches any updates to a given search will show up here. To add a new search go to the <strong>Search</strong> page. Close this box to make it go away!</div>
+
+                    <p>Since you last visited there have been <strong>4</strong> new updates to your searches.</p>
+
+                    <table class="table table-striped">
+                        <tr>
+                            <td>Update #1.</td>
+                        </tr>
+                        <tr>
+                            <td>Update #2.</td>
+                        </tr>
+                        <tr>
+                            <td>Update #3.</td>
+                        </tr>
+                        <tr>
+                            <td>Update #4.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- /container -->
+
+{% endblock %}
