@@ -19,8 +19,7 @@ urlpatterns = patterns('',
 
 # Cheap hack to get Heroku to work
 # Reference: http://stackoverflow.com/questions/9047054/heroku-handling-static-files-in-django-app
-if not settings.DEBUG:
-    urlpatterns += patterns('',
-        (r'^static/(?P<path>.*)$', 'django.views.static.server', {'document_root': settings.STATIC_ROOT}),
-    )
+urlpatterns += patterns('',
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+)
 
