@@ -9,6 +9,7 @@ anyjson==0.3.3
 billiard==2.7.3.17
 boto==2.6.0
 celery==3.0.11
+discogs-client==1.1.1
 dj-database-url==0.2.1
 django-adminplus==0.1.7
 django-appconf==0.5
@@ -18,6 +19,7 @@ django-debug-toolbar==0.9.4
 django-nose==1.1
 django-ses==0.4.1
 django-social-auth==0.7.7
+django-uuidfield==0.4.0
 gunicorn==0.15.0
 httplib2==0.7.6
 ipdb==0.7

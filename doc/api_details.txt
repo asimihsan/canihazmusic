@@ -1,0 +1,29 @@
+-------------------------------------------------------------------------------
+    API details.
+-------------------------------------------------------------------------------
+
+-   As Beatport and Discogs are the easiest by far do these two first, good way to cut your teeth.
+
+-   Beatport
+    -   http://api.beatport.com/
+        -   http://api.beatport.com/catalog-search.html
+            -   e.g. http://api.beatport.com/catalog/3/search?query=believe+2004
+            -   Results as JSON
+            -   rv["results"][0] is a result
+            -   lots of keys. Right now go for: "title", "artists", "remixers", "label", "genre", "release date", "price" (same as default search on page)
+            -   remember to paginate, default is 10 results.
+
+-   Discogs
+    -   http://www.discogs.com/developers/
+    -   OAuth API.
+    -   pip install discogs-client
+    -   https://github.com/discogs/discogs_client
+
+-   Juno Records
+    -   http://www.juno.co.uk/
+    -   Scrape it
+
+-   Juno Downloads
+    -   http://www.junodownload.com
+    -   Scrape it.
+

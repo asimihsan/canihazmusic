@@ -14,24 +14,31 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+# -----------------------------------------------------------------------------
+#   Development and Heroku production databases.
+# -----------------------------------------------------------------------------
+DATABASES = {"default": {}}
+if bool(os.environ.get('CANIHAZMUSIC_DEVELOPMENT', False)):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+            'NAME': os.path.join(PROJECT_DIR, "database.sqlite3"),  # Or path to database file if using sqlite3.
+            'USER': '',                      # Not used with sqlite3.
+            'PASSWORD': '',                  # Not used with sqlite3.
+            'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+            'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        }
     }
-}
-import dj_database_url
-DATABASES['default'] = dj_database_url.config()
+else:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.config()
+# -----------------------------------------------------------------------------
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Europe/London'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -103,6 +110,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.utilities.middleware.CommonVariablesMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'canihazmusic.urls'
@@ -135,7 +144,19 @@ INSTALLED_APPS = (
     'apps.search',
     'apps.settings',
 
+    # Third party apps
     'gunicorn',
+    'debug_toolbar',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
 )
 
 # A sample logging configuration. The only tangible logging
@@ -146,6 +167,14 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s - %(asctime)s - %(module)s - %(process)d - %(thread)d - %(message)s',
+        },
+        'simple': {
+            'format': '%(asctime)s - %(name)s - %(message)s'
+        },
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -156,7 +185,13 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'stream': 'ext://sys.stdout',
+        },
     },
     'loggers': {
         'django.request': {
@@ -164,5 +199,18 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-    }
+        'apps': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        },
+    },
 }
+
+# ---------------------------------------------------------------------------
+#   django-debug-toolbar settings.
+# ---------------------------------------------------------------------------
+INTERNAL_IPS = ('127.0.0.1', )
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+}
+# ---------------------------------------------------------------------------
