@@ -31,7 +31,7 @@ if bool(os.environ.get('CANIHAZMUSIC_DEVELOPMENT', False)):
     }
 else:
     import dj_database_url
-    DATABASES['default'] = dj_database_url.parse(os.environ.get(DATABASE_URL, ""))
+    DATABASES['default'] = dj_database_url.parse(os.environ.get("DATABASE_URL", ""))
 # -----------------------------------------------------------------------------
 
 # Local time zone for this installation. Choices can be found here:
