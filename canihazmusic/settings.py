@@ -225,7 +225,7 @@ import djcelery
 djcelery.setup_loader()
 
 # Broker settings
-BROKER_URL = r"amqp://guest:guest@localhost:5672/"
+BROKER_URL = os.environ.get("CLOUDAMQP_URL", "")
 
 # List of modules to import when celery starts.
 CELERY_IMPORTS = ("apps.search.tasks", )

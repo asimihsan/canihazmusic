@@ -30,3 +30,7 @@ pip-log.txt
 database.db
 
 database.sqlite3
+
+# Production-only environment
+.env
+
