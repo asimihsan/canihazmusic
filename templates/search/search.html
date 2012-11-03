@@ -33,9 +33,9 @@
                 <div class="span12">
                     <div class="alert alert-info"><button class="close" data-dismiss="alert" type="button">×</button><strong>You're new here!</strong> This is the search page. Here you can not only search for new release but then tell us that you want to get emails about future updates to each search. Close this box to make it go away!</div>
 
-                    <form class="form-search">
+                    <form class="form-search" action="{% url 'apps.search.views.search' %}" method="GET">
                         <div class="input-append">
-                            <input type="text" class="span4 search-query">
+                            <input name="q" type="text" class="span4 search-query" value="{{ clean_query }}">
                             <button type="submit" class="btn">Search</button>
                         </div>
                     </form>

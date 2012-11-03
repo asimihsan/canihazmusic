@@ -147,6 +147,9 @@ INSTALLED_APPS = (
     # Third party apps
     'gunicorn',
     'debug_toolbar',
+    'south',
+    'kombu.transport.django',
+    'djcelery',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -214,3 +217,34 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+#   celery settings.
+# ---------------------------------------------------------------------------
+import djcelery
+djcelery.setup_loader()
+
+# Broker settings
+BROKER_URL = r"amqp://guest:guest@localhost:5672/"
+
+# List of modules to import when celery starts.
+CELERY_IMPORTS = ("apps.search.tasks", )
+
+# Use the database to store task state and results.
+# CELERY_RESULT_DBURI = r"sqlite://database.sqlite3"
+# CELERY_RESULT_DBRI = r"postgresql://username:password@localhost/mydatabase"
+
+# CELERY_ANNOTATIONS = {"tasks.add": {"rate_limit": "10/s"}}
+
+# Annotate all tasks
+# CELERY_ANNOTATIONS = {"*": {"rate_limit": "10/s"}}
+
+# AMQP settings.
+CELERY_RESULT_BACKEND = "amqp"
+CELERY_RESULT_EXCHANGE = "celeryresults"
+CELERY_RESULT_EXCHANGE_TYPE = "direct"
+CELERY_RESULT_PERSISTENT = True
+CELERY_TASK_RESULT_EXPIRES = 18000 # 5 hours
+CELERY_MESSAGE_COMPRESSION = "bzip2"
+# ---------------------------------------------------------------------------
+

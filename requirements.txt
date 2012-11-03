@@ -16,6 +16,7 @@ django-appconf==0.5
 django-celery==3.0.11
 django-compressor==1.2
 django-debug-toolbar==0.9.4
+django-jsonfield==0.8.11
 django-nose==1.1
 django-ses==0.4.1
 django-social-auth==0.7.7
