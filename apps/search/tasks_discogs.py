@@ -34,6 +34,9 @@ class DiscogsSearchTask(Task):
         logger.info("DiscogsSearchTask: starting request %s, pk: %s, sort_by_date: %s" %
                 (self.request.id, pk, sort_by_date))
         try:
+            # -----------------------------------------------------------------
+            #   Perform search.
+            # -----------------------------------------------------------------
             search = Search.objects.get(pk = pk)
             payload = {"q": search.query,
                        "type": "release"}
@@ -46,9 +49,13 @@ class DiscogsSearchTask(Task):
                 logger.error("request status code %s not OK." % r.status_code)
             data = json.loads(r.text)
             results = data["results"]
+            # -----------------------------------------------------------------
 
+            # -----------------------------------------------------------------
+            #   Sanitize and normalize output.
+            # -----------------------------------------------------------------
             return_value = []
-            permitted_types = set(["artist", "label", "release"])
+            permitted_types = set(["release"])
             for result in results:
                 if result["type"] not in permitted_types:
                     continue
@@ -57,13 +64,19 @@ class DiscogsSearchTask(Task):
                 return_subvalue["uri"] = RETURN_ROOT_URI + result["uri"]
                 return_subvalue["title"] = result["title"]
                 return_subvalue["image"] = result["thumb"]
+                return_subvalue["label"] = result["label"][0]
                 if "year" in result:
                     date = datetime.date(int(result["year"]),
                                          month = 1,
                                          day = 1)
                     return_subvalue["date"] = date
                     return_subvalue["date_as_string"] = "%s" % date.year
+                else:
+                    return_subvalue["date"] = datetime.date(year=1970, month=1, day=1)
+                    return_subvalue["date_as_string"] = "Unknown"
+                return_subvalue["source"] = "Discogs"
                 return_value.append(return_subvalue)
+            # -----------------------------------------------------------------
         except:
             logger.exception("DiscogsSearchTask_%s: unhandled exception." % self.request.id)
             raise

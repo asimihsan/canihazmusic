@@ -58,17 +58,21 @@
                         {% if search.results|length > 0 %}
                         <thead>
                             <tr>
-                                <th>Image</th>
-                                <th>Title</th>
-                                <th>Date</th>
+                                <th></th>
+                                <th>Release title</th>
+                                <th>Label</th>
+                                <th>Date released</th>
+                                <th>Source</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for result in search.results %}
                             <tr>
-                                <td><img src="{{ result.image }}" /></td>
-                                <td>{{ result.title }}</td>
+                                <td><a href="{{ result.uri }}"><img src="{{ result.image }}" /></a></td>
+                                <td><a href="{{ result.uri }}">{{ result.title }}</a></td>
+                                <td>{{ result.label }}</td>
                                 <td>{{ result.date_as_string }}</td>
+                                <td>{{ result.source }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -60,7 +60,10 @@ class MainSearchTask(Task):
     name = "apps.search.tasks.MainSearchTask"
     ignore_result = True
     acks_late = True
-    subtask_classes = [DiscogsSearchTask, BeatportSearchTask]
+    subtask_classes = [ \
+                       DiscogsSearchTask,
+                       BeatportSearchTask,
+                      ]
 
     def run(self, pk):
         logger.info("MainSearchTask: starting request %s. pk: %s" %

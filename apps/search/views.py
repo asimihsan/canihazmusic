@@ -92,7 +92,7 @@ def search_execute_query(request):
 
 def read_search(request, uuid):
     logger = logging.getLogger("apps.search.views.read_search")
-    logger.debug("entry.")
+    logger.debug("entry. uuid: %s" % uuid)
 
     # -------------------------------------------------------------------------
     #   Get Search object, don't catch exception if not found.
@@ -109,7 +109,7 @@ def read_search(request, uuid):
 
 def is_search_finished(request, uuid):
     logger = logging.getLogger("apps.search.views.is_search_finished")
-    logger.debug("entry.")
+    logger.debug("entry. uuid: %s" % uuid)
 
     # -------------------------------------------------------------------------
     #   Get Search object, don't catch exception if not found.
