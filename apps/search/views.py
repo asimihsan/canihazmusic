@@ -3,6 +3,8 @@ from django.template import RequestContext
 from django.views.decorators.http import require_safe
 from django.utils.html import escape
 from django.db import transaction
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
 
 import json
 import logging
@@ -27,7 +29,7 @@ def search(request):
                               data,
                               context_instance = RequestContext(request))
 
-#@transaction.commit_manually
+@transaction.commit_manually
 def search_execute_query(request):
     logger = logging.getLogger("apps.search.views.search_execute_query")
     logger.debug("entry.")
@@ -65,11 +67,11 @@ def search_execute_query(request):
                                        type = search_type)
     except:
         logger.exception("Exception on creating Search object.")
-        #transaction.rollback()
+        transaction.rollback()
         raise
     else:
         logger.debug("Committing transaction and starting search for pk: %s" % search.pk)
-        #transaction.commit()
+        transaction.commit()
         try:
             MainSearchTask.delay(search.pk)
         except:
@@ -78,6 +80,9 @@ def search_execute_query(request):
     # -------------------------------------------------------------------------
 
     data["clean_query"] = clean_query
+    data["is_search_in_progress"] = True
+    data["search_uuid"] = search.uuid.hex
+    data["is_search_finished_uri"] = reverse("apps.search.views.is_search_finished", args=(search.uuid.hex, ))
 
     return render_to_response('search/search.html',
                               data,
@@ -89,8 +94,33 @@ def read_search(request, uuid):
     logger = logging.getLogger("apps.search.views.read_search")
     logger.debug("entry.")
 
+    # -------------------------------------------------------------------------
+    #   Get Search object, don't catch exception if not found.
+    # -------------------------------------------------------------------------
+    search = Search.objects.get(uuid = uuid)
+    # -------------------------------------------------------------------------
+
+    data = {}
+    data["search"] = search
+    data["clean_query"] = search.query
+    return render_to_response('search/search.html',
+                              data,
+                              context_instance = RequestContext(request))
+
 def is_search_finished(request, uuid):
     logger = logging.getLogger("apps.search.views.is_search_finished")
     logger.debug("entry.")
 
+    # -------------------------------------------------------------------------
+    #   Get Search object, don't catch exception if not found.
+    # -------------------------------------------------------------------------
+    search = Search.objects.get(uuid = uuid)
+    # -------------------------------------------------------------------------
+
+    data = {"uuid": uuid,
+            "is_search_finished": search.is_finished}
+    if search.is_finished:
+        logger.debug("search is finished.")
+        data["read_search_uri"] = reverse("apps.search.views.read_search", args=(uuid, ))
+    return HttpResponse(json.dumps(data), mimetype="application/json")
 

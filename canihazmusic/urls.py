@@ -7,7 +7,7 @@ from django.conf import settings
 
 urlpatterns = patterns('',
     url(r'^updates/', include('apps.updates.urls')),
-    url(r'^search', include('apps.search.urls')),
+    url(r'^search/', include('apps.search.urls')),
     url(r'^settings/', include('apps.settings.urls')),
     url(r'^$|^index.htm$|^index.html$', 'apps.landing.views.index', name='index'),
 

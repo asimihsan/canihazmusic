@@ -4,21 +4,66 @@ from celery.registry import tasks
 from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
-import discogs_client as discogs
-discogs.user_agent = "CanIHazMusic/0.1 +http://icanhazmusic.herokuapp.com"
+import requests
+import json
+import datetime
+
+# -----------------------------------------------------------------------------
+#   Constants.
+# -----------------------------------------------------------------------------
+USER_AGENT = "CanIHazMusic/0.1 +http://icanhazmusic.herokuapp.com"
+EMAIL = "asim.ihsan@gmail.com"
+HEADERS = {"User-Agent": USER_AGENT, "From": "asim.ihsan@gmail.com"}
+SEARCH_URI = "http://api.discogs.com/database/search"
+RETURN_ROOT_URI = "http://www.discogs.com"
+# -----------------------------------------------------------------------------
 
 from apps.search.models import Search
 
 class DiscogsSearchTask(Task):
+    """Search on Discogs.
+
+    Notes:
+        -   Discogs have a 1/s rate limit.
+    """
     name = "apps.search.tasks_discogs.DiscogsSearchTask"
     acks_late = True
+    rate_limit = "1/s"
 
-    def run(self, pk):
-        logger.info("DiscogsSearchTask: starting request %s, pk: %s" %
-                (self.request.id, pk))
+    def run(self, pk, sort_by_date=True):
+        logger.info("DiscogsSearchTask: starting request %s, pk: %s, sort_by_date: %s" %
+                (self.request.id, pk, sort_by_date))
         try:
             search = Search.objects.get(pk = pk)
-            return_value = [{"blah3": "blah4"}]
+            payload = {"q": search.query,
+                       "type": "release"}
+            if sort_by_date == True:
+                logger.debug("sort by date.")
+                payload["sort"] = "year"
+                payload["sort_order"] = "desc"
+            r = requests.get(SEARCH_URI, params=payload, headers=HEADERS)
+            if r.status_code != requests.codes.ok:
+                logger.error("request status code %s not OK." % r.status_code)
+            data = json.loads(r.text)
+            results = data["results"]
+
+            return_value = []
+            permitted_types = set(["artist", "label", "release"])
+            for result in results:
+                if result["type"] not in permitted_types:
+                    continue
+                return_subvalue = {}
+                return_subvalue["type"] = result["type"]
+                return_subvalue["uri"] = RETURN_ROOT_URI + result["uri"]
+                return_subvalue["title"] = result["title"]
+                return_subvalue["image"] = result["thumb"]
+                if "year" in result:
+                    date = datetime.date(int(result["year"]),
+                                         month = 1,
+                                         day = 1)
+                    return_subvalue["date"] = date
+                    return_subvalue["date_as_string"] = "%s" % date.year
+                return_value.append(return_subvalue)
         except:
             logger.exception("DiscogsSearchTask_%s: unhandled exception." % self.request.id)
             raise

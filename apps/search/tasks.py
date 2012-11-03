@@ -6,6 +6,7 @@ from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
 import pprint
+import operator
 
 from apps.search.models import Search
 from apps.search.tasks_discogs import DiscogsSearchTask
@@ -20,12 +21,26 @@ class CommitSearchResultsTask(Task):
                 (self.request.id,
                  pk))
         try:
-            logger.debug("results: %s" % pprint.pformat(results))
+            # -----------------------------------------------------------------
+            #   Sort and flatten the results.
+            #
+            #   Remember that sorting in Python is stable, so we can sort
+            #   ascending by title and then descening by date without
+            #   re-ordering by title.
+            # -----------------------------------------------------------------
+            flattened_results = [item for sublist in results for item in sublist]
+            flattened_results.sort(key = operator.itemgetter("title"))
+            flattened_results.sort(key = operator.itemgetter("date"), reverse=True)
+            # -----------------------------------------------------------------
+
+            # -----------------------------------------------------------------
+            #   Persist the results, mark the search as finished.
+            # -----------------------------------------------------------------
             search = Search.objects.get(pk = pk)
             search.is_finished = True
-            flattened_results = [item for sublist in results for item in sublist]
             search.results = flattened_results
             search.save()
+            # -----------------------------------------------------------------
         except:
             logger.exception("CommitSearchResultsTask_%s: unhandled exception" % self.request.id)
             raise
