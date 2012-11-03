@@ -19,7 +19,7 @@ class Search(models.Model):
 
     uuid = UUIDField(auto=True, db_index=True)
     is_finished = models.BooleanField(default=False)
-    results_as_json = models.TextField(blank=True)
+    results = JSONField()
 
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField(default=timezone.now)

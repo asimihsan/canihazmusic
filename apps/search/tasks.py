@@ -1,10 +1,34 @@
 from celery.task import Task, TaskSet
 from celery.task.sets import subtask
 from celery.registry import tasks
+from celery import group, chain, chord
 from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
+import pprint
+
 from apps.search.models import Search
+from apps.search.tasks_discogs import DiscogsSearchTask
+from apps.search.tasks_beatport import BeatportSearchTask
+
+class CommitSearchResultsTask(Task):
+    name = "apps.search.tasks.CommitSearchResultsTask"
+    ignore_result = True
+
+    def run(self, results, pk):
+        logger.info("CommitSearchResultsTask: starting request %s. pk: %s" %
+                (self.request.id,
+                 pk))
+        try:
+            logger.debug("results: %s" % pprint.pformat(results))
+            search = Search.objects.get(pk = pk)
+            search.is_finished = True
+            flattened_results = [item for sublist in results for item in sublist]
+            search.results = flattened_results
+            search.save()
+        except:
+            logger.exception("CommitSearchResultsTask_%s: unhandled exception" % self.request.id)
+            raise
 
 # -----------------------------------------------------------------------------
 #   -   Search task does not direct return a result because instead it
@@ -21,30 +45,32 @@ class MainSearchTask(Task):
     name = "apps.search.tasks.MainSearchTask"
     ignore_result = True
     acks_late = True
+    subtask_classes = [DiscogsSearchTask, BeatportSearchTask]
 
-    def run(self, pk, **kwargs):
+    def run(self, pk):
         logger.info("MainSearchTask: starting request %s. pk: %s" %
                 (self.request.id,
                  pk))
         try:
             # -----------------------------------------------------------------
-            #   Attempt to get Search object, or raise Exception.
-            # -----------------------------------------------------------------
-            try:
-                search = Search.objects.get(pk = pk)
-            except Search.DoesNotExist:
-                logger.exception("Search object does not exist.")
-                raise
-            # -----------------------------------------------------------------
-
-            # -----------------------------------------------------------------
-            #   Execute chained subtasks to get results, and a final
+            #   Execute subtasks to get results, and a final
             #   subtask to persist all the results.
+            #
+            #   Using a chord allows MainSearchTask to return immediately,
+            #   execute subtasks in parallel, and then commit results in a
+            #   final task.
+            #
+            #   Perform an initial get of the Search object to confirm it
+            #   exists before launching subtasks.
             # -----------------------------------------------------------------
+            search = Search.objects.get(pk = pk)
+            subtasks = [subtask_class.subtask((search.pk, )) for subtask_class in self.subtask_classes]
+            callback = CommitSearchResultsTask.subtask((search.pk, ))
+            chord(subtasks)(callback)
             # -----------------------------------------------------------------
 
         except:
-            logger.exception("main_search_task_%s: unhandled exception." % self.request.id)
+            logger.exception("MainSearchTask_%s: unhandled exception." % self.request.id)
             raise
 
 tasks.register(MainSearchTask)
