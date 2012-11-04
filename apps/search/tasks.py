@@ -30,6 +30,7 @@ class CommitSearchResultsTask(Task):
             #   ascending by title and then descening by date without
             #   re-ordering by title.
             # -----------------------------------------------------------------
+            logger.info("result size: %s" % sum(len(elem) for elem in results))
             deserialized_results = [pickle.loads(bz2.decompress(result)) for result in results]
             flattened_results = [item for sublist in deserialized_results for item in sublist]
             flattened_results.sort(key = operator.itemgetter("title"))
