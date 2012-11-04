@@ -229,7 +229,6 @@ djcelery.setup_loader()
 
 # Broker settings
 BROKER_URL = os.environ.get("CLOUDAMQP_URL", "")
-BROKER_POOL_LIMIT = 1
 BROKER_HEARTBEAT = 10
 
 # List of modules to import when celery starts.
