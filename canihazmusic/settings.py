@@ -6,7 +6,7 @@ import os
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 if bool(os.environ.get('CANIHAZMUSIC_DEVELOPMENT', False)):
-    DEBUG = True
+    DEBUG = False # True
 else:
     DEBUG = False
 TEMPLATE_DEBUG = DEBUG
