@@ -7,6 +7,8 @@ logger = get_task_logger(__name__)
 import requests
 import json
 import datetime
+import bz2
+import cPickle as pickle
 
 # -----------------------------------------------------------------------------
 #   Constants.
@@ -80,5 +82,6 @@ class DiscogsSearchTask(Task):
         except:
             logger.exception("DiscogsSearchTask_%s: unhandled exception." % self.request.id)
             raise
-        return return_value
+        serialized_return_value = bz2.compress(pickle.dumps(return_value, -1))
+        return serialized_return_value
 

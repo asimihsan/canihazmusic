@@ -246,6 +246,5 @@ CELERY_RESULT_EXCHANGE = "celeryresults"
 CELERY_RESULT_EXCHANGE_TYPE = "direct"
 CELERY_RESULT_PERSISTENT = True
 CELERY_TASK_RESULT_EXPIRES = 18000 # 5 hours
-CELERY_MESSAGE_COMPRESSION = "bzip2"
 # ---------------------------------------------------------------------------
 

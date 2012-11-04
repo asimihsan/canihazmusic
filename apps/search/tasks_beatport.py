@@ -8,6 +8,8 @@ import requests
 import json
 import datetime
 import pprint
+import bz2
+import cPickle as pickle
 
 from apps.search.models import Search
 
@@ -75,5 +77,6 @@ class BeatportSearchTask(Task):
         except:
             logger.exception("BeatportSearchTask_%s: unhandled exception." % self.request.id)
             raise
-        return return_value
+        serialized_return_value = bz2.compress(pickle.dumps(return_value, -1))
+        return serialized_return_value
 
