@@ -5,7 +5,10 @@ import os
 #   File path constants.
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
-DEBUG = True
+if bool(os.environ.get('CANIHAZMUSIC_DEVELOPMENT', False)):
+    DEBUG = True
+else:
+    DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -227,6 +230,7 @@ djcelery.setup_loader()
 # Broker settings
 BROKER_URL = os.environ.get("CLOUDAMQP_URL", "")
 BROKER_POOL_LIMIT = 1
+BROKER_HEARTBEAT = 10
 
 # List of modules to import when celery starts.
 CELERY_IMPORTS = ("apps.search.tasks", )
@@ -246,5 +250,6 @@ CELERY_RESULT_EXCHANGE = "celeryresults"
 CELERY_RESULT_EXCHANGE_TYPE = "direct"
 CELERY_RESULT_PERSISTENT = True
 CELERY_TASK_RESULT_EXPIRES = 18000 # 5 hours
+CELERYBEAT_MAX_LOOP_INTERVAL = 300
 # ---------------------------------------------------------------------------
 
